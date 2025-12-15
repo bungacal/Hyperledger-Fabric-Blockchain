@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackinChain - Data Rantai Produk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f5;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            background: #e8f0f0;
+            padding: 15px 40px;
+            border-bottom: 1px solid #d0d8d8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-dashboard {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #3d9a9a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-dashboard:hover {
+            background: #2d8080;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #d0d8d8;
+        }
+
+        .user-profile:hover {
+            background: #f5f5f5;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #3d9a9a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 40px;
+        }
+
+        /* Product Card */
+        .product-card {
+            background: #e8f5f5;
+            padding: 25px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #d4e8e8;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .product-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .product-id {
+            font-size: 13px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-batch {
+            background: #3d9a9a;
+            color: white;
+        }
+
+        .btn-add-batch:hover {
+            background: #2d8080;
+        }
+
+        .btn-generate-qr {
+            background: #2d5f5f;
+            color: white;
+        }
+
+        .btn-generate-qr:hover {
+            background: #1d4040;
+        }
+
+        /* Supply Chain Timeline */
+        .supply-chain {
+            margin-top: 20px;
+        }
+
+        .chain-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .chain-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 24px;
+            width: 2px;
+            height: calc(100% + 5px);
+            background: #d0d0d0;
+        }
+
+        .chain-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chain-dot.completed {
+            background: #4caf50;
+        }
+
+        .chain-dot.pending {
+            background: #d0d0d0;
+        }
+
+        .chain-content {
+            flex: 1;
+        }
+
+        .chain-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .chain-title.completed {
+            color: #c41e3a;
+        }
+
+        .chain-details {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .chain-location {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* Add Product Button */
+        .add-product-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .btn-add-product {
+            background: #8B4513;
+            color: white;
+            padding: 14px 36px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-product:hover {
+            background: #723910;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 0 10px #2d5f5f;
+        }
+
+        .modal-header {
+            padding: 25px 35px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #c41e3a;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            position: absolute;
+            right: -45px;
+            top: -45px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            font-weight: 300;
+        }
+
+        .btn-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px 35px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d8d8d8;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1a1a1a;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3d9a9a;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #bbb;
+            font-style: italic;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 20px 35px 25px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+        }
+
+        .btn-save {
+            flex: 2;
+            background: #3d9a9a;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: #2d8080;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: white;
+            color: #1a1a1a;
+            padding: 14px;
+            border: 1px solid #d8d8d8;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 15px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .product-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .product-actions {
+                width: 100%;
+            }
+
+            .btn-action {
+                flex: 1;
+            }
+
+            .modal-content {
+                box-shadow: 0 0 0 6px #2d5f5f;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .btn-close {
+                right: -35px;
+                top: -35px;
+                font-size: 24px;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .btn-save,
+            .btn-cancel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo-section">
+            <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 10 L80 30 L80 70 L50 90 L20 70 L20 30 Z" 
+                      fill="none" stroke="#2d5f5f" stroke-width="6"/>
+                <path d="M50 30 L65 40 L65 60 L50 70 L35 60 L35 40 Z" 
+                      fill="#2d5f5f"/>
+                <circle cx="50" cy="50" r="8" fill="#fff"/>
+            </svg>
+            <span class="logo-text">TrackinChain</span>
+        </div>
+
+        <div class="header-right">
+            <a href="dashboard.html" class="btn-dashboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                Dashboard
+            </a>
+
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <span class="user-name">Bunga Calista</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Product Card 1: Susu Kedelai -->
+        <div class="product-card">
+            <div class="product-header">
+                <div>
+                    <h2 class="product-title">Susu Kedelai</h2>
+                    <p class="product-id">ID: SK-001</p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-action btn-add-batch" onclick="openModal()">Tambah Batch</button>
+                    <a href="qr.html?batch=SK-001&product=Susu Kedelai" class="btn-action btn-generate-qr" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Generate QR</a>
+                </div>
+            </div>
+
+            <div class="supply-chain">
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Bahan Baku Diterima</h3>
+                        <p class="chain-details">
+                            Petani Kedelai Desa Mulyo<br>
+                            <span class="chain-location">📍 Malang, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Card 2: Tempe Organik -->
+        <div class="product-card">
+            <div class="product-header">
+                <div>
+                    <h2 class="product-title">Tempe Organik</h2>
+                    <p class="product-id">ID: TP-002</p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-action btn-add-batch" onclick="openModal()">Tambah Batch</button>
+                    <a href="qr.html?batch=TP-002&product=Tempe Organik" class="btn-action btn-generate-qr" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Generate QR</a>
+                </div>
+            </div>
+
+            <div class="supply-chain">
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Bahan Baku Diterima</h3>
+                        <p class="chain-details">
+                            Petani Kedelai Desa Mulyo<br>
+                            <span class="chain-location">📍 Malang, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Proses Produksi</h3>
+                        <p class="chain-details">
+                            Dapur Produksi Sidoarjo<br>
+                            <span class="chain-location">📍 Sidoarjo, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Card 3: Tahu Premium -->
+        <div class="product-card">
+            <div class="product-header">
+                <div>
+                    <h2 class="product-title">Tahu Premium</h2>
+                    <p class="product-id">ID: TH-003</p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-action btn-add-batch" onclick="openModal()">Tambah Batch</button>
+                    <a href="qr.html?batch=TH-003&product=Tahu Premium" class="btn-action btn-generate-qr" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Generate QR</a>
+                </div>
+            </div>
+
+            <div class="supply-chain">
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Bahan Baku Diterima</h3>
+                        <p class="chain-details">
+                            Petani Kedelai Desa Mulyo<br>
+                            <span class="chain-location">📍 Malang, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Proses Produksi</h3>
+                        <p class="chain-details">
+                            Dapur Produksi Sidoarjo<br>
+                            <span class="chain-location">📍 Sidoarjo, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Distribusi</h3>
+                        <p class="chain-details">
+                            Koperasi Logistik Sidoarjo<br>
+                            <span class="chain-location">📍 Sidoarjo, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chain-item">
+                    <div class="chain-dot completed"></div>
+                    <div class="chain-content">
+                        <h3 class="chain-title completed">Retail</h3>
+                        <p class="chain-details">
+                            Toko Sojahtera, Surabaya<br>
+                            <span class="chain-location">📍 Surabaya, Jawa Timur</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Product Button -->
+        <div class="add-product-section">
+            <button class="btn-add-product" onclick="openModal()">Tambah Produk</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <button class="btn-close" onclick="closeModal()">✕</button>
+            
+            <div class="modal-header">
+                <h2 class="modal-title">Input Data Rantai Pasok Produk</h2>
+            </div>
+
+            <form id="productForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="productName">Nama Produk</label>
+                        <input type="text" id="productName" name="productName" placeholder="Susu Kedelai" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batchId">Batch ID</label>
+                        <input type="text" id="batchId" name="batchId" placeholder="SK-82749" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="supplierName">Nama Supplier</label>
+                        <input type="text" id="supplierName" name="supplierName" placeholder="Petani Kedelai Desa Mulyo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Lokasi</label>
+                        <input type="text" id="location" name="location" placeholder="Sidoarjo, Jawa Timur" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Jumlah Produksi</label>
+                        <input type="number" id="quantity" name="quantity" placeholder="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Tanggal</label>
+                        <input type="date" id="date" name="date" value="2025-09-20" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="supplyChainStage">Tahapan Supply Chain</label>
+                        <select id="supplyChainStage" name="supplyChainStage" required>
+                            <option value="">Pilih tahapan...</option>
+                            <option value="bahan-baku">Bahan Baku Diterima</option>
+                            <option value="produksi">Proses Produksi</option>
+                            <option value="distribusi">Distribusi</option>
+                            <option value="retail">Retail</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Catatan Tambahan</label>
+                        <textarea id="notes" name="notes" placeholder="Produk ini diproduksi langsung dengan......"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn-save">Save</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('productModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            console.log('Form submitted:', data);
+            
+            // Redirect to QR Ready page with data
+            const params = new URLSearchParams({
+                batch: data.batchId,
+                product: data.productName
+            });
+            
+            window.location.href = 'qr.html?' + params.toString();
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
